@@ -129,6 +129,7 @@ function onCellClicked(elCell, i, j) {
         elCell.classList.add('fail')
         gGame.isOn = false
         endTimer()
+        toggleLoosing()
         return console.log('You lost!')
     } else {
         gGame.shownCount++
@@ -202,6 +203,7 @@ function checkGameOver() {
         gGame.isOn = false
         console.log('You won!!')
         endTimer()
+        toggleWinning()
     }
 }
 
@@ -221,4 +223,18 @@ function startTimer() {
 
 function endTimer() {
     clearInterval(gIntervalTimer)
+}
+
+function toggleWinning() {
+	const elTable = document.querySelector('.board')
+	elTable.classList.toggle('hidden')
+	const elVictory = document.querySelector('.victory')
+	elVictory.classList.toggle('hidden')
+}
+
+function toggleLoosing() {
+	const elTable = document.querySelector('.board')
+	elTable.classList.toggle('hidden')
+	const elVictory = document.querySelector('.loss')
+	elVictory.classList.toggle('hidden')
 }

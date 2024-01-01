@@ -1,7 +1,7 @@
 body {
     background-color: seagreen;
     font-family: Arial, Helvetica, sans-serif;
-    color: white;
+    color: whitesmoke;
     text-align: center;
 }
 
@@ -11,17 +11,32 @@ h1 {
 
 .settings {
     text-align: center;
-    font-size: 20px;
+    font-size: 24px;
     border: 3px solid orangered;
-    width: 300px;
+    width: 400px;
     margin: 20px auto;
     padding: 10px;
     border-radius: 15px;
     color: brown;
 }
 
+.difficulty button {
+    margin: 5px;
+    height: 30px;
+    width: fit-content;
+    font-size: 16px;
+    background-color: orange;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 400ms;
+}
+
+.difficulty button:hover {
+    background-color: whitesmoke;
+}
+
 table {
-    margin: 100px auto;
+    margin: 50px auto;
 }
 
 .cell {
@@ -65,4 +80,30 @@ table {
 
 .empty {
     background-color: rgb(183, 183, 183);
+}
+
+footer {
+    font-size: 20px;
+}
+
+.restartBtn {
+    background-color: orange;
+    color: whitesmoke;
+    margin: 100px auto;
+}
+
+.hidden {
+    display: none;
+}
+
+.victory img {
+    margin: 100px auto;
+    width: 300px;
+    height: 300px;
+}
+
+.loss img {
+    margin: 100px auto;
+    width: 300px;
+    height: 300px;
 }

@@ -1,0 +1,68 @@
+body {
+    background-color: seagreen;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    text-align: center;
+}
+
+h1 {
+    font-size: 50px;
+}
+
+.settings {
+    text-align: center;
+    font-size: 20px;
+    border: 3px solid orangered;
+    width: 300px;
+    margin: 20px auto;
+    padding: 10px;
+    border-radius: 15px;
+    color: brown;
+}
+
+table {
+    margin: 100px auto;
+}
+
+.cell {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    background-color: rgb(131, 156, 177);
+    transition: 400ms;
+    cursor:crosshair
+}
+
+.cell:hover {
+    background-color: lightsalmon;
+}
+
+.cell img {
+    width: 25px;
+    height: auto;
+    vertical-align:middle;
+}
+
+.restartBtn {
+    background-color: orange;
+    color: whitesmoke;
+    margin: 100px auto;
+}
+
+.hidden {
+    display: none;
+}
+
+.victory img {
+    margin: 100px auto;
+    width: 300px;
+    height: 300px;
+}
+
+.fail {
+    background-color: red;
+}
+
+.empty {
+    background-color: rgb(183, 183, 183);
+}

@@ -12,7 +12,8 @@ h1 {
 .settings {
     text-align: center;
     font-size: 24px;
-    border: 3px solid orangered;
+    border: 3px solid black;
+    background-color: rgb(173, 141, 141);
     width: 400px;
     margin: 20px auto;
     padding: 10px;
@@ -20,7 +21,7 @@ h1 {
     color: brown;
 }
 
-.difficulty button {
+.difficulty button , .restartBtn{
     margin: 5px;
     height: 30px;
     width: fit-content;
@@ -31,7 +32,7 @@ h1 {
     transition: 400ms;
 }
 
-.difficulty button:hover {
+.difficulty button:hover, .restartBtn:hover {
     background-color: whitesmoke;
 }
 
@@ -58,22 +59,6 @@ table {
     vertical-align:middle;
 }
 
-.restartBtn {
-    background-color: orange;
-    color: whitesmoke;
-    margin: 100px auto;
-}
-
-.hidden {
-    display: none;
-}
-
-.victory img {
-    margin: 100px auto;
-    width: 300px;
-    height: 300px;
-}
-
 .fail {
     background-color: red;
 }
@@ -87,9 +72,8 @@ footer {
 }
 
 .restartBtn {
-    background-color: orange;
-    color: whitesmoke;
-    margin: 100px auto;
+    margin: 10px auto;
+    display: block;
 }
 
 .hidden {
@@ -97,13 +81,17 @@ footer {
 }
 
 .victory img {
-    margin: 100px auto;
-    width: 300px;
-    height: 300px;
+    margin: 50px auto;
+    width: 400px;
+    height: 400px;
 }
 
 .loss img {
-    margin: 100px auto;
-    width: 300px;
-    height: 300px;
+    margin: 50px auto;
+    width: 400px;
+    height: 400px;
+}
+
+footer {
+    margin-top: 40px;
 }

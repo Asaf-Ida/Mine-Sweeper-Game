@@ -1,5 +1,6 @@
 'use strict'
 
+var gIsWinning
 var gIntervalTimer
 var gBoard
 var gLevel = { SIZE: 4, MINES: 2 }
@@ -26,6 +27,7 @@ function renderSettingsDisplay() {
 
 // Set the game level
 function onSetLevel(elBtn) {
+    if(!gGame.isOn) return
     var level = elBtn.innerText
     switch (level) {
         case 'Beginner':
@@ -38,7 +40,7 @@ function onSetLevel(elBtn) {
             gLevel = { SIZE: 12, MINES: 32 }
             break;      
     }
-    restartGame()
+    changeLevel()
 }
 
 // Build the board for the modal
@@ -108,9 +110,6 @@ function renderBoard(board) {
             strHTML += `\t<td class="cell ${cellClass}" onclick="onCellClicked(this, ${i}, ${j})"
                         oncontextmenu="onCellMarked(this, event, ${i}, ${j})">`
 
-            // if (currCell.isMine) {
-            //     strHTML += MINE_IMG
-            // }  else strHTML += currCell.minesAroundCount
             strHTML += '</td>\n'
         }
         strHTML += '</tr>\n'
@@ -128,9 +127,10 @@ function onCellClicked(elCell, i, j) {
         revealMinesCells()
         elCell.classList.add('fail')
         gGame.isOn = false
+        gIsWinning = false
         endTimer()
-        toggleLoosing()
-        return console.log('You lost!')
+        setTimeout(toggleLoosing, 2500)
+        return 
     } else {
         gGame.shownCount++
         currCell.isShown = true
@@ -155,6 +155,7 @@ function revealMinesCells() {
     }
 }
 
+// Expand when empty cell is clicked
 function expandShown(board, pos) {
     for (var i = pos.i - 1; i <= pos.i + 1; i++) {
         if (i < 0 || i >= board.length) continue
@@ -162,15 +163,15 @@ function expandShown(board, pos) {
             if (j < 0 || j >= board[i].length) continue
             if (board[i][j].isMarked || board[i][j].isShown) continue
             if (i === pos.i && j === pos.j) continue
-            
+
             const elCell = document.querySelector(`.cell-${i}-${j}`)
             elCell.classList.add('empty')
-            
-            // if (board[i][j].minesAroundCount === 0) expandShown(board, { i, j }) // future development
-            
             gGame.shownCount++
             board[i][j].isShown = true
-            elCell.innerText = board[i][j].minesAroundCount
+
+            if (!board[i][j].minesAroundCount) expandShown(board, { i, j }) 
+
+            if (board[i][j].minesAroundCount) elCell.innerText = board[i][j].minesAroundCount
         }
     }
 }
@@ -198,18 +199,24 @@ function removeMarkCell(currCell, elCell) {
 
 function checkGameOver() {
     var emptyCells = gLevel.SIZE ** 2 - gLevel.MINES
-    console.log(emptyCells, gLevel.MINES, gGame.shownCount, gGame.markedCount)
     if (gGame.shownCount === emptyCells && gGame.markedCount === gLevel.MINES) {
         gGame.isOn = false
-        console.log('You won!!')
+        gIsWinning = true
         endTimer()
         toggleWinning()
     }
 }
 
-function restartGame() {
+function changeLevel() {
     gGame = { isOn: false, shownCount: 0, markedCount: 0, secsPassed: 0 }
     endTimer()
+    onInit()
+}
+
+function restartGame() {
+    gGame = { isOn: false, shownCount: 0, markedCount: 0, secsPassed: 0 }
+    if (gIsWinning) toggleWinning()
+    else toggleLoosing()
     onInit()
 }
 

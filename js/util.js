@@ -28,7 +28,7 @@ function getEmptyPos(board) {
 
     for (var i = 0; i < board.length; i++) {
         for (var j = 0; j < board.length; j++) {
-            emptyPositions.push({ i, j })
+            if (!board[i][j].isShown) emptyPositions.push({ i, j })
         }
     }
     return emptyPositions

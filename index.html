@@ -12,11 +12,14 @@
         <div class="settings">
             <div class="difficulty">
                 Game level: 
-                <button onclick="onSetLevel(this)">Beginner</button>
+                <button class="onLevel" onclick="onSetLevel(this)">Beginner</button>
                 <button onclick="onSetLevel(this)">Medium</button>
                 <button onclick="onSetLevel(this)">Expert</button>
             </div>
             <div class="timer"></div>
+        </div>
+        <div class="bomb-click hidden">
+            <img src="img/click-bomb.jpg">
         </div>
         <table class="board">
 			<tbody></tbody>

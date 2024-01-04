@@ -9,6 +9,10 @@ h1 {
     font-size: 50px;
 }
 
+.difficulty .onLevel {
+    background-color: brown;
+}
+
 .settings {
     text-align: center;
     font-size: 24px;
@@ -76,6 +80,11 @@ footer {
     display: block;
 }
 
+.restartBtn img {
+    height: 100px;
+    width: 100px;
+}
+
 .hidden {
     display: none;
 }
@@ -87,6 +96,12 @@ footer {
 }
 
 .loss img {
+    margin: 50px auto;
+    width: 400px;
+    height: 400px;
+}
+
+.bomb-click img {
     margin: 50px auto;
     width: 400px;
     height: 400px;

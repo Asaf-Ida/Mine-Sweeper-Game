@@ -4,7 +4,7 @@ var gIsWinning
 var gIntervalTimer
 var gBoard
 var gLevel = { SIZE: 4, MINES: 2 }
-var gGame = { isOn: false, shownCount: 0, markedCount: 0, secsPassed: 0 }
+var gGame = { isOn: false, shownCount: 0, markedCount: 0, secsPassed: 0, lives: 3 }
 
 const MINE_IMG = '<img src="img/mine.png">'
 const FLAG_IMG = '<img src="img/flag.png">'
@@ -19,7 +19,7 @@ function onInit() {
 
 // Render the settings
 function renderSettingsDisplay() {
-    var htmlStr =  `Time: ${String(gGame.secsPassed).padStart(2, '0')}`
+    var htmlStr = `LIVES: ${gGame.lives}   ||  Time: ${String(gGame.secsPassed).padStart(2, '0')}`
 
     const elStgDisplay = document.querySelector('.timer')
     elStgDisplay.innerText = htmlStr
@@ -27,7 +27,11 @@ function renderSettingsDisplay() {
 
 // Set the game level
 function onSetLevel(elBtn) {
-    if(!gGame.isOn) return
+    if (!gGame.isOn) return
+    const formerOnLevel = document.querySelector('.onLevel')
+    formerOnLevel.classList.remove('onLevel')
+    elBtn.classList.add('onLevel')
+
     var level = elBtn.innerText
     switch (level) {
         case 'Beginner':
@@ -38,7 +42,7 @@ function onSetLevel(elBtn) {
             break;
         case 'Expert':
             gLevel = { SIZE: 12, MINES: 32 }
-            break;      
+            break;
     }
     changeLevel()
 }
@@ -56,8 +60,6 @@ function buildBoard() {
     //board[1][2].isMine = true
     //board[3][3].isMine = true
 
-    setMinesRandomLocation(board)
-    setMinesNegsCount(board)
     return board
 }
 
@@ -118,19 +120,41 @@ function renderBoard(board) {
 }
 
 function onCellClicked(elCell, i, j) {
-    if(!gGame.isOn) return
+    if (!gGame.isOn || gBoard[i][j].isMarked) return
+    var currCell = gBoard[i][j]
+
     if (!gGame.shownCount) {
         startTimer()
+        gGame.shownCount++
+        currCell.isShown = true
+        elCell.classList.add('empty')
+
+        setMinesRandomLocation(gBoard)
+        setMinesNegsCount(gBoard)
+
+        if (!currCell.minesAroundCount) {
+            expandShown(gBoard, { i, j })
+        } else {
+            elCell.innerText = currCell.minesAroundCount
+        }
+        return
     }
-    var currCell = gBoard[i][j]
+
     if (currCell.isMine) {
-        revealMinesCells()
-        elCell.classList.add('fail')
-        gGame.isOn = false
-        gIsWinning = false
-        endTimer()
-        setTimeout(toggleLoosing, 2500)
-        return 
+        gGame.lives--
+        if (gGame.lives > 0) {
+            toggleFail()
+            setTimeout(toggleFail, 750)
+        } else {
+            revealMinesCells()
+            elCell.classList.add('fail')
+            gGame.isOn = false
+            gIsWinning = false
+            renderSettingsDisplay()
+            endTimer()
+            setTimeout(toggleLoosing, 2500)
+        }
+        return
     } else {
         gGame.shownCount++
         currCell.isShown = true
@@ -169,7 +193,7 @@ function expandShown(board, pos) {
             gGame.shownCount++
             board[i][j].isShown = true
 
-            if (!board[i][j].minesAroundCount) expandShown(board, { i, j }) 
+            if (!board[i][j].minesAroundCount) expandShown(board, { i, j })
 
             if (board[i][j].minesAroundCount) elCell.innerText = board[i][j].minesAroundCount
         }
@@ -178,7 +202,7 @@ function expandShown(board, pos) {
 
 function onCellMarked(elCell, ev, i, j) {
     ev.preventDefault()
-    if (!gGame.shownCount || !gGame.isOn) return
+    if (!gGame.shownCount || !gGame.isOn || gBoard[i][j].isShown) return
     var currCell = gBoard[i][j]
     if (!currCell.isMarked) addMarkCell(currCell, elCell)
     else removeMarkCell(currCell, elCell)
@@ -208,13 +232,13 @@ function checkGameOver() {
 }
 
 function changeLevel() {
-    gGame = { isOn: false, shownCount: 0, markedCount: 0, secsPassed: 0 }
+    gGame = { isOn: false, shownCount: 0, markedCount: 0, secsPassed: 0, lives: 3 }
     endTimer()
     onInit()
 }
 
 function restartGame() {
-    gGame = { isOn: false, shownCount: 0, markedCount: 0, secsPassed: 0 }
+    gGame = { isOn: false, shownCount: 0, markedCount: 0, secsPassed: 0, lives: 3 }
     if (gIsWinning) toggleWinning()
     else toggleLoosing()
     onInit()
@@ -223,8 +247,8 @@ function restartGame() {
 function startTimer() {
     var start = Date.now();
     gIntervalTimer = setInterval(() => {
-    gGame.secsPassed = Math.floor((Date.now() - start) / 1000)   // in seconds
-    renderSettingsDisplay()
+        gGame.secsPassed = Math.floor((Date.now() - start) / 1000)   // in seconds
+        renderSettingsDisplay()
     }, 1000)
 }
 
@@ -233,15 +257,22 @@ function endTimer() {
 }
 
 function toggleWinning() {
-	const elTable = document.querySelector('.board')
-	elTable.classList.toggle('hidden')
-	const elVictory = document.querySelector('.victory')
-	elVictory.classList.toggle('hidden')
+    const elTable = document.querySelector('.board')
+    elTable.classList.toggle('hidden')
+    const elVictory = document.querySelector('.victory')
+    elVictory.classList.toggle('hidden')
 }
 
 function toggleLoosing() {
-	const elTable = document.querySelector('.board')
-	elTable.classList.toggle('hidden')
-	const elVictory = document.querySelector('.loss')
-	elVictory.classList.toggle('hidden')
+    const elTable = document.querySelector('.board')
+    elTable.classList.toggle('hidden')
+    const elLoosing = document.querySelector('.loss')
+    elLoosing.classList.toggle('hidden')
+}
+
+function toggleFail() {
+    const elTable = document.querySelector('.board')
+    elTable.classList.toggle('hidden')
+    const elFailImg = document.querySelector('.bomb-click')
+    elFailImg.classList.toggle('hidden')
 }

@@ -16,7 +16,17 @@
                 <button onclick="onSetLevel(this)">Medium</button>
                 <button onclick="onSetLevel(this)">Expert</button>
             </div>
-            <div class="timer"></div>
+            <div class="game-state"></div>
+            <div class="container">
+                <div class="hints">HINTS: 
+                    <img class="bulb" src="img/bulb-off.png" onclick="useHint(this)">
+                    <img class="bulb" src="img/bulb-off.png">
+                    <img class="bulb" src="img/bulb-off.png">
+                </div>
+                <div class="safe-click">
+                    <button onclick="safeClick()"></button>
+                </div>
+            </div>
         </div>
         <div class="bomb-click hidden">
             <img src="img/click-bomb.jpg">
@@ -26,11 +36,9 @@
 		</table>
         <div class="victory hidden">
             <img src="img/victory.png">
-			<button class="restartBtn" onclick="restartGame()">Restart Game</button>
 		</div>
         <div class="loss hidden">
             <img src="img/game-over-lose.jpg">
-			<button class="restartBtn" onclick="restartGame()">Restart Game</button>
 		</div>
         <script src="js/util.js"></script>
 	    <script src="js/app.js"></script>

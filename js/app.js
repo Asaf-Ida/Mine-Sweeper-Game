@@ -1,16 +1,19 @@
 'use strict'
 
+var gIsHint
+var gRestartEmoji
 var gIsWinning
 var gIntervalTimer
 var gBoard
 var gLevel = { SIZE: 4, MINES: 2 }
-var gGame = { isOn: false, shownCount: 0, markedCount: 0, secsPassed: 0, lives: 3 }
+var gGame = { isOn: false, shownCount: 0, markedCount: 0, secsPassed: 0, lives: 3, safeClick: 3, exterminator: 1 }
 
 const MINE_IMG = '<img src="img/mine.png">'
 const FLAG_IMG = '<img src="img/flag.png">'
 
 function onInit() {
     gGame.isOn = true
+    gRestartEmoji = '<img src="img/smiley.png">'
     renderSettingsDisplay()
     gBoard = buildBoard()
     renderBoard(gBoard)
@@ -19,10 +22,16 @@ function onInit() {
 
 // Render the settings
 function renderSettingsDisplay() {
-    var htmlStr = `LIVES: ${gGame.lives}   ||  Time: ${String(gGame.secsPassed).padStart(2, '0')}`
+    var htmlStr = `LIVES: ${gGame.lives}    ||  
+    <button class="restartBtnEmoji" onclick="restartGame()">${gRestartEmoji}</button>
+    ||    TIME: ${String(gGame.secsPassed).padStart(2, '0')} || 
+    <button class="exterminator" onclick="useExterminator(this)">Exterminator</button>`
 
-    const elStgDisplay = document.querySelector('.timer')
-    elStgDisplay.innerText = htmlStr
+    const elStgDisplay = document.querySelector('.game-state')
+    elStgDisplay.innerHTML = htmlStr
+
+    const elSafeClicksBtn = document.querySelector('.safe-click button')
+    elSafeClicksBtn.innerText = `${gGame.safeClick} Safe Clicks`
 }
 
 // Set the game level
@@ -120,7 +129,8 @@ function renderBoard(board) {
 }
 
 function onCellClicked(elCell, i, j) {
-    if (!gGame.isOn || gBoard[i][j].isMarked) return
+    if (!gGame.isOn || gBoard[i][j].isMarked || gBoard[i][j].isShown) return
+    if (gIsHint) return revealNegs({ i, j })
     var currCell = gBoard[i][j]
 
     if (!gGame.shownCount) {
@@ -136,6 +146,7 @@ function onCellClicked(elCell, i, j) {
             expandShown(gBoard, { i, j })
         } else {
             elCell.innerText = currCell.minesAroundCount
+            addColorText(elCell, currCell.minesAroundCount)
         }
         return
     }
@@ -150,6 +161,7 @@ function onCellClicked(elCell, i, j) {
             elCell.classList.add('fail')
             gGame.isOn = false
             gIsWinning = false
+            gRestartEmoji = '<img src="img/sad.png">'
             renderSettingsDisplay()
             endTimer()
             setTimeout(toggleLoosing, 2500)
@@ -163,6 +175,7 @@ function onCellClicked(elCell, i, j) {
             expandShown(gBoard, { i, j })
         } else {
             elCell.innerText = currCell.minesAroundCount
+            addColorText(elCell, currCell.minesAroundCount)
         }
         checkGameOver()
     }
@@ -195,14 +208,17 @@ function expandShown(board, pos) {
 
             if (!board[i][j].minesAroundCount) expandShown(board, { i, j })
 
-            if (board[i][j].minesAroundCount) elCell.innerText = board[i][j].minesAroundCount
+            if (board[i][j].minesAroundCount) {
+                elCell.innerText = board[i][j].minesAroundCount
+                addColorText(elCell, board[i][j].minesAroundCount)
+            }
         }
     }
 }
 
 function onCellMarked(elCell, ev, i, j) {
     ev.preventDefault()
-    if (!gGame.shownCount || !gGame.isOn || gBoard[i][j].isShown) return
+    if (!gGame.shownCount || !gGame.isOn || gBoard[i][j].isShown || gIsHint) return
     var currCell = gBoard[i][j]
     if (!currCell.isMarked) addMarkCell(currCell, elCell)
     else removeMarkCell(currCell, elCell)
@@ -223,22 +239,29 @@ function removeMarkCell(currCell, elCell) {
 
 function checkGameOver() {
     var emptyCells = gLevel.SIZE ** 2 - gLevel.MINES
-    if (gGame.shownCount === emptyCells && gGame.markedCount === gLevel.MINES) {
+    if (gGame.exterminator) var minusMines = 0
+    else minusMines = 3
+    if (gGame.shownCount === emptyCells && gGame.markedCount === (gLevel.MINES - minusMines)) {
         gGame.isOn = false
         gIsWinning = true
+        gRestartEmoji = '<img src="img/sunglasses.png">'
+        renderSettingsDisplay()
         endTimer()
         toggleWinning()
     }
 }
 
 function changeLevel() {
-    gGame = { isOn: false, shownCount: 0, markedCount: 0, secsPassed: 0, lives: 3 }
+    restartHints()
+    gGame = { isOn: false, shownCount: 0, markedCount: 0, secsPassed: 0, lives: 3, safeClick: 3, exterminator: 1 }
     endTimer()
     onInit()
 }
 
 function restartGame() {
-    gGame = { isOn: false, shownCount: 0, markedCount: 0, secsPassed: 0, lives: 3 }
+    if (gGame.isOn) return changeLevel()
+    restartHints()
+    gGame = { isOn: false, shownCount: 0, markedCount: 0, secsPassed: 0, lives: 3, safeClick: 3, exterminator: 1 }
     if (gIsWinning) toggleWinning()
     else toggleLoosing()
     onInit()
@@ -275,4 +298,84 @@ function toggleFail() {
     elTable.classList.toggle('hidden')
     const elFailImg = document.querySelector('.bomb-click')
     elFailImg.classList.toggle('hidden')
+}
+
+function useHint(elBulb) {
+    if (!gGame.isOn) return
+    elBulb.src = "img/bulb-on.png"
+    gIsHint = true
+}
+
+function revealNegs(pos) {
+    for (var i = pos.i - 1; i <= pos.i + 1; i++) {
+        if (i < 0 || i >= gBoard.length) continue
+        for (var j = pos.j - 1; j <= pos.j + 1; j++) {
+            if (j < 0 || j >= gBoard[i].length) continue
+
+            var currCell = gBoard[i][j]
+            const elCell = document.querySelector(`.cell-${i}-${j}`)
+            if (currCell.isMine) elCell.innerHTML = MINE_IMG
+            else elCell.innerHTML = currCell.minesAroundCount
+        }
+    }
+    setTimeout(hideNegs, 1000, pos)
+
+    const elBulbs = document.querySelectorAll('.bulb')
+    elBulbs[0].remove()
+    if (elBulbs.length > 1) elBulbs[1].setAttribute('onclick', 'useHint(this)')
+}
+
+function hideNegs(pos) {
+    for (var i = pos.i - 1; i <= pos.i + 1; i++) {
+        if (i < 0 || i >= gBoard.length) continue
+        for (var j = pos.j - 1; j <= pos.j + 1; j++) {
+            if (j < 0 || j >= gBoard[i].length) continue
+
+            var currCell = gBoard[i][j]
+            if (currCell.isShown) continue
+            const elCell = document.querySelector(`.cell-${i}-${j}`)
+            if (currCell.isMarked) elCell.innerHTML = FLAG_IMG
+            else elCell.innerText = ''
+        }
+    }
+    gIsHint = false
+}
+
+function restartHints() {
+    gIsHint = false
+
+    const elHints = document.querySelector('.hints')
+    elHints.innerHTML = `HINTS: <img class="bulb" src="img/bulb-off.png" onclick="useHint(this)">
+    <img class="bulb" src="img/bulb-off.png">
+    <img class="bulb" src="img/bulb-off.png">`
+}
+
+function safeClick() {
+    if (!gGame.isOn || !gGame.safeClick) return
+    var emptyPositions = getEmptyPos(gBoard)
+    if (emptyPositions === null) return
+
+    const idx = getRandomIntInclusive(0, emptyPositions.length - 1)
+    var currPos = emptyPositions[idx]
+
+    const elCell = document.querySelector(`.cell-${currPos.i}-${currPos.j}`)
+    elCell.classList.toggle('highlight')
+    setTimeout(() => elCell.classList.toggle('highlight') ,600)
+
+    gGame.safeClick--
+}
+
+function useExterminator(elBtn) {
+    if (!gGame.isOn || !gGame.exterminator || gLevel.MINES === 2) return
+    
+    var minesPositions = getMinesPos(gBoard)
+    for (var i = 0; i < 3; i++) {
+        const idx = getRandomIntInclusive(0, minesPositions.length - 1)
+        var currPos = minesPositions.splice(idx, 1)[0]
+        gBoard[currPos.i][currPos.j].isMine = false
+    }
+    setMinesNegsCount(gBoard)
+
+    gGame.exterminator--
+    elBtn.style.backgroundColor = 'gray'
 }

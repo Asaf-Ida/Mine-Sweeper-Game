@@ -1,12 +1,14 @@
 body {
-    background-color: seagreen;
     font-family: Arial, Helvetica, sans-serif;
     color: whitesmoke;
     text-align: center;
+    background-image: url(../img/background.jpg);
+    background-size: cover;
 }
 
 h1 {
     font-size: 50px;
+    text-shadow: 8px 6px 5px #292525bf;
 }
 
 .difficulty .onLevel {
@@ -18,14 +20,14 @@ h1 {
     font-size: 24px;
     border: 3px solid black;
     background-color: rgb(173, 141, 141);
-    width: 400px;
+    width: 450px;
     margin: 20px auto;
     padding: 10px;
     border-radius: 15px;
     color: brown;
 }
 
-.difficulty button , .restartBtn{
+.difficulty button {
     margin: 5px;
     height: 30px;
     width: fit-content;
@@ -47,6 +49,7 @@ table {
 .cell {
     width: 40px;
     height: 40px;
+    font-size: 20px;
     text-align: center;
     background-color: rgb(131, 156, 177);
     transition: 400ms;
@@ -71,18 +74,82 @@ table {
     background-color: rgb(183, 183, 183);
 }
 
-footer {
-    font-size: 20px;
+.restartBtnEmoji {
+    margin-top: 5px;
+    background-color: transparent;
+    border: none;
 }
 
-.restartBtn {
-    margin: 10px auto;
-    display: block;
+.restartBtnEmoji img {
+    height: 30px;
+    width: 30px;
+    margin-top: 5px;
+    vertical-align: bottom;
+    cursor: pointer;
+    opacity: 0.75;
 }
 
-.restartBtn img {
-    height: 100px;
-    width: 100px;
+.restartBtnEmoji img:hover {
+    opacity: 1;
+}
+
+.container {
+    margin: 5px;
+}
+
+.hints {
+    background-color: transparent;
+    border: none;
+    float: left;
+}
+
+.hints img {
+    height: 30px;
+    width: 30px;
+    margin: 5px 5px 0px 5px;
+    vertical-align: bottom;
+    cursor: pointer;
+}
+
+.safe-click {
+    display: inline-block;
+    width: 150px;
+    margin-top: 5px;
+    align-self: left;
+}
+
+.safe-click button {
+    height: 30px;
+    width: fit-content;
+    font-size: 16px;
+    background-color:deepskyblue;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 400ms;
+    vertical-align: bottom;
+}
+
+.container button:hover{
+    background-color: whitesmoke;
+}
+
+.highlight {
+    background-color: blueviolet;
+}
+
+.exterminator {
+    margin: 5px;
+    height: 30px;
+    width: fit-content;
+    font-size: 16px;
+    background-color:crimson;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 400ms;
+}
+
+.game-state .exterminator:hover {
+    background-color: whitesmoke;
 }
 
 .hidden {
@@ -108,5 +175,6 @@ footer {
 }
 
 footer {
-    margin-top: 40px;
+    font-size: 20px;
+    margin-top: 20px;
 }
